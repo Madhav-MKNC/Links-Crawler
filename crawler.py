@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 """
-# Title:    AAVE Docs Scraper
+# Title:    Links Crawler
 # author:   MKNC (https://github.com/Madhav-MKNC)
-# created:  09-01-2023 22:50 
+# created:  09-01-2023 22:50 IST
 """
 
 # AAVE docs link
