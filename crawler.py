@@ -71,7 +71,7 @@ if __name__ == '__main__':
     if not url.startswith('http'): url = 'https://'+url
 
     try:
-        aave = Crawler(base_url=url, restricted_domain=url)
+        aave = Crawler(base_url=url)
         aave.crawl()
     except KeyboardInterrupt:
         print("[Program Stopped]")
