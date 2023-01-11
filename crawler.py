@@ -5,7 +5,7 @@
 # author:   MKNC
 # created:  12-01-2023 01:50 
 # """
-
+#
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
