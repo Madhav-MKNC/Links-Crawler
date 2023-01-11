@@ -1,68 +1,82 @@
 #!/usr/bin/env python3
 
-"""
+# """
 # Title:    Links Crawler
-# author:   MKNC (https://github.com/Madhav-MKNC)
-# created:  09-01-2023 22:50 IST
-"""
-
-# AAVE docs link
-# url = "https://docs.aave.com/hub/"
+# author:   MKNC
+# created:  12-01-2023 01:50 
+# """
 
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
+import os
+from platform import uname
+def printScreen():
+    os.system('cls' if 'win' in uname().system.lower() else 'clear')
+    print("["+"="*30+" LINKS CRAWLER "+"="*30+"]\n")
+
+def saveData(fname, LIST):
+    with open(fname,'w',encoding="utf-8") as file:
+        file.write("\n".join(LIST))
+    print("[+] list saved in 'links_crawled.txt'")
 
 class Crawler:
-    def __init__(self, urls=[]):
-        self.visited_urls = []
-        self.urls = urls
+    def __init__(self, base_url, restricted_domain='https://'):
+        self.urls = [base_url]
+        self.urls_dict = dict()
+        self.restricted_domain = restricted_domain
+    
+    def inList(self, url):
+        try: return self.urls_dict[url]
+        except: return False
 
-    def get_url_content(self, url):
-        return requests.get(url).text
-
-    def scrape_all_urls(self, url):
-        soup = BeautifulSoup(self.get_url_content(url), 'html.parser')
+    def crawl_all_links(self, url):
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
         for link in soup.find_all('a'):
             path = link.get('href')
-            if not path.startswith('http'):
-                path = urljoin(url,path)
-            if path not in self.urls and path not in self.visited_urls:
-                self.urls.append(path)
+            if not path.startswith('http'): path = urljoin(url,path)
+
+            if self.inList(path): continue
+            if '#' in path: continue
+            if not path.startswith(self.restricted_domain): continue
+
+            print("[+] Link found -",path)
+            self.urls.append(path)
+            self.urls_dict[path] = True
 
     def crawl(self):
-        try:
-            while self.urls:
-                url = self.urls.pop(0)
-                print("[+] Crawling:",url)
-                try:
-                    self.scrape_all_urls(url)
-                    self.visited_urls.append(url)
-                except AttributeError:
-                    print(f'[-] No href on : {url}\n')
-                except Exception as e:
-                    print(f'[!] Failed to crawl: {url}')
-                    print("[!] REASON:",e,'\n')
-        except KeyboardInterrupt:
-                print("[-] Program Exited...")
+        while self.urls:
+            url = self.urls.pop(0)
+            print("[+] Crawling:",url)
+            try:
+                self.crawl_all_links(url)
+            except AttributeError:
+                print(f'[-] No href on : {url}\n')
+            except Exception as e:
+                print(f'[!] Failed to crawl: {url}')
+                print("[!] REASON:",e,'\n')
 
+    def saveData(self, fname='links_found.txt'):
+        with open(fname,'w',encoding="utf-8") as file:
+            file.write("\n".join(self.urls))
+        print("[+] list saved in 'links_crawled.txt'")
 
 if __name__ == '__main__':
-    import platform
-    import os 
-
-    os.system('cls' if 'win' in platform.uname().system.lower() else 'clear')
-    print("LINKS CRAWLER\n")
+    printScreen()
 
     url = input('[=] Enter the base url you want to crawl: ')
-    # url = "https://docs.aave.com/hub/"
-    if not url.startswith('https://'): url = 'https://'+url
+    url = "https://docs.aave.com/"
+    if not url.startswith('http'): url = 'https://'+url
 
-    aave = Crawler(urls=[url])
-    aave.crawl()
+    try:
+        aave = Crawler(base_url=url, restricted_domain=url)
+        aave.crawl()
+    except KeyboardInterrupt:
+        print("[Program Stopped]")
+    aave.saveData()
+
     print("len(urls) =",len(aave.urls))
     print("len(set(urls)) =",len(set(aave.urls)))
-    with open('links_crawled.txt','w') as f:
-        f.write("\n".join(aave.visited_urls))
-    print("[+] list saved in 'links_crawled.txt'")
+
