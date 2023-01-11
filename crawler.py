@@ -5,7 +5,7 @@
 # author:   MKNC
 # created:  12-01-2023 01:50 
 # """
-#
+
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
@@ -16,15 +16,11 @@ def printScreen():
     os.system('cls' if 'win' in uname().system.lower() else 'clear')
     print("["+"="*30+" LINKS CRAWLER "+"="*30+"]\n")
 
-def saveData(fname, LIST):
-    with open(fname,'w',encoding="utf-8") as file:
-        file.write("\n".join(LIST))
-    print("[+] list saved in 'links_crawled.txt'")
-
 class Crawler:
     def __init__(self, base_url, restricted_domain='https://'):
         self.urls = [base_url]
         self.urls_dict = dict()
+        self.links_found = list(self.urls_dict.keys())
         self.restricted_domain = restricted_domain
     
     def inList(self, url):
@@ -44,6 +40,7 @@ class Crawler:
 
             print("[+] Link found -",path)
             self.urls.append(path)
+            self.links_found.append(path)
             self.urls_dict[path] = True
 
     def crawl(self):
@@ -60,7 +57,7 @@ class Crawler:
 
     def saveData(self, fname='links_found.txt'):
         with open(fname,'w',encoding="utf-8") as file:
-            file.write("\n".join(self.urls))
+            file.write("\n".join(self.links_found))
         print("[+] list saved in 'links_crawled.txt'")
 
 if __name__ == '__main__':
@@ -77,6 +74,6 @@ if __name__ == '__main__':
         print("[Program Stopped]")
     aave.saveData()
 
-    print("len(urls) =",len(aave.urls))
-    print("len(set(urls)) =",len(set(aave.urls)))
+    print("len(urls) =",len(aave.links_found))
+    print("len(set(urls)) =",len(set(aave.links_found)))
 
