@@ -2,7 +2,7 @@
 
 # """
 # Title:    Links Crawler
-# author:   MKNC
+# author:   MKNC [https://github.com/Madhav-MKNC/]
 # created:  12-01-2023 01:50 
 # """
 
