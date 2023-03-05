@@ -38,7 +38,7 @@ class Crawler:
             if '#' in path: continue
             if not path.startswith(self.restricted_domain): continue
 
-            print("[+] Link found -",path)
+            print("[*] Link found -",path)
             self.urls.append(path)
             self.links_found.append(path)
             self.urls_dict[path] = True
@@ -46,7 +46,7 @@ class Crawler:
     def crawl(self):
         while self.urls:
             url = self.urls.pop(0)
-            print("[+] Crawling:",url)
+            print("\n[+] Crawling:",url)
             try:
                 self.crawl_all_links(url)
             except AttributeError:
@@ -58,22 +58,23 @@ class Crawler:
     def saveData(self, fname='links_found.txt'):
         with open(fname,'w',encoding="utf-8") as file:
             file.write("\n".join(self.links_found))
-        print("[+] list saved in 'links_crawled.txt'")
+        print("[+] list saved in 'links_found.txt'")
 
 if __name__ == '__main__':
     printScreen()
 
     url = input('[=] Enter the base url you want to crawl: ')
-    url = "https://docs.aave.com/"
+    # url = "https://docs.aave.com/"
     if not url.startswith('http'): url = 'https://'+url
 
     try:
         aave = Crawler(base_url=url)
         aave.crawl()
     except KeyboardInterrupt:
-        print("[Program Stopped]")
+        print("\n[Program Stopped]")
     aave.saveData()
 
+    print()
     print("len(urls) =",len(aave.links_found))
     print("len(set(urls)) =",len(set(aave.links_found)))
 
